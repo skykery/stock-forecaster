@@ -8,3 +8,8 @@ The fastAPI app will handle the input, get the stock history using yfinnance and
 A new model will be created using fbprophet and it will forecast a number of x values (5Y as default).
 
 Everything will be rendered using Jinja, Chartjs and picocss.
+
+The project is live at https://stock-forecaster.techwetrust.com/
+
+![Landing page](https://iili.io/HEdEiCv.md.png)
+![Result page](https://iili.io/HEdGFF2.md.png)
