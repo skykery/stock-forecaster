@@ -1,0 +1,16 @@
+version: "3"
+services:
+  app:
+    build: .
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: 2000M
+          cpus: '6'
+      restart_policy:
+        condition: none
+    volumes:
+      - ./data:/data
+    ports:
+      - "1982:8000"

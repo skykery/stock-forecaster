@@ -1,0 +1,81 @@
+{% extends "template.html" %}
+{% block body %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<main class="container">
+    <section>
+        <form class="stock-form">
+            <article>
+                <h1 class="title">Wanna get a stock price prediction?</h1>
+                <p class="title">Type your stock below and be amazed</p>
+                <p class="title extra-small">Disclaimer: The ML algorithm can be drunk</p>
+            </article>
+            <div class="grid">
+                <input id="symbol" name="symbol" hidden/>
+                <input type="text" id="name" name="name"
+                       placeholder="Start typing a stock name or symbol" class="typeahead" required>
+                <button type="submit" class="outline submit-btn">Show me the future</button>
+            </div>
+        </form>
+        <div class="result"><a href="https://twitter.com/intent/tweet?screen_name=alin__alexandru&ref_src=twsrc%5Etfw" class="twitter-mention-button" data-show-count="false">Tweet to @alin__alexandru</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script></div>
+    </section>
+</main>
+<style>
+    .title{
+    text-align: center;
+    margin-bottom: 0px;
+    }
+    .extra-small{
+      font-size: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block script %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/easy-autocomplete/1.3.5/easy-autocomplete.min.css" integrity="sha512-TsNN9S3X3jnaUdLd+JpyR5yVSBvW9M6ruKKqJl5XiBpuzzyIMcBavigTAHaH50MJudhv5XIkXMOwBL7TbhXThQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/easy-autocomplete/1.3.5/jquery.easy-autocomplete.min.js" integrity="sha512-Z/2pIbAzFuLlc7WIt/xifag7As7GuTqoBbLsVTgut69QynAIOclmweT6o7pkxVoGGfLcmPJKn/lnxyMNKBAKgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/easy-autocomplete/1.3.5/easy-autocomplete.themes.min.css" integrity="sha512-5EKwOr+n8VmXDYfE/EObmrG9jmYBj/c1ZRCDaWvHMkv6qIsE60srmshD8tHpr9C7Qo4nXyA0ki22SqtLyc4PRw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script>
+var options = {
+	url: function(phrase) {
+		return "suggestions?q=" + phrase;
+	},
+	list: {
+		onSelectItemEvent: function() {
+			var value = $("input#name").getSelectedItemData().symbol;
+			$("#symbol").val(value).trigger("change");
+		},
+	    match: {
+			enabled: true
+		},
+
+	},
+	getValue: "name_w_symbol"
+};
+
+$("input#name").easyAutocomplete(options);
+
+$( ".stock-form" ).submit(function( event ) {
+  submit_btn = $(this).find( ".submit-btn" );
+  submit_btn.attr('aria-busy', 'true');
+  submit_btn.text("Our unpaid robot is processing your request")
+  event.preventDefault();
+
+  symbol = $("input#symbol").val()
+   $.get("/forecast?symbol=" + symbol, function( data ) {});
+
+    var intervalId = window.setInterval(function(){
+       $.get("/stock/"+ symbol +"/ready", function( data ) {
+          is_ready = data.is_ready
+          url = data.url_to_redirect
+          if (data.is_ready){
+            clearInterval(intervalId)
+            window.location.href = data.url_to_redirect;
+          }
+       });
+    }, 5000);
+
+
+});
+</script>
+{% endblock %}

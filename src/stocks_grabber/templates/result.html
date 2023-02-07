@@ -1,0 +1,89 @@
+{% extends "template.html" %}
+{% block body %}
+<div>
+  <canvas id="myChart"></canvas>
+</div>
+
+<main class="congainer">
+  <section>
+    <article>
+      <p>
+        The blue line is the actual price
+      </p>
+      <p>
+        The red line shows the forecasted price, and it can be going up or down in the next 5 years.
+      </p>
+    </article>
+  </section>
+</main>
+{% endblock %}
+
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@^3"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@^2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
+
+<script>
+  historyData = {{history|safe}}
+  forecastData = {{trend|safe}}
+  upper = {{upper|safe}}
+  lower = {{lower|safe}}
+  const ctx = document.getElementById('myChart');
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      datasets: [
+        {
+          data: forecastData,
+          label: 'Forecasted price',
+          borderColor: '#FF0000'
+        },
+        {
+          data: historyData,
+          label: 'Stock price',
+          borderColor: '#36A2EB'
+        },
+        {
+          data: upper,
+          label: 'Forecasted price upper',
+          borderColor: '#fabbc3',
+          fill: 3
+        },
+        {
+          data: lower,
+          label: 'Forecasted price lower',
+          borderColor: '#fabbc3'
+        },
+      ],
+    },
+    options: {
+      normalized: true,
+      responsive: true,
+      scales: {
+        x: {
+          type: 'time',
+        },
+      },
+      plugins: {
+        decimation: {
+          enabled: true,
+          algorithm: 'lttb',
+          samples: 10,
+        },
+        filler: {
+            propagate: false
+        },
+        legend: {
+          position: 'top',
+        },
+        title: {
+          display: true,
+          text: 'Forecast bsed on past stock prices and trends'
+        }
+      }
+    },
+  });
+</script>
+
+{% endblock %}
